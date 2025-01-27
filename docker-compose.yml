@@ -1,0 +1,49 @@
+version: '3.9'
+services:
+  postgres:
+    container_name: r-postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE}
+    ports:
+      - '5434:5432'
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+  server:
+    container_name: r-node-server
+    image: r-node-server
+    env_file: './.env'
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      DATABASE_HOST: postgres
+    # Docker Volume References:
+    # https://stackoverflow.com/questions/46166304/docker-compose-volumes-without-colon
+    # https://mherman.org/blog/dockerizing-a-react-app/
+    volumes:
+      - '.:/app' # Host Volumes: Map host volume into the container.
+      - '/app/node_modules'
+    depends_on:
+      - postgres
+    ports:
+      - '8001:3001'
+  clients:
+    container_name: r-react-clients
+    image: r-react-clients
+    env_file: './clients/.env'
+    build:
+      context: ./clients
+      dockerfile: ./Dockerfile
+    environment:
+      REACT_APP_APPOLO_CLIENT_URI: http://localhost:8001/graphql
+    depends_on:
+      - postgres
+      - server
+    ports:
+      - '8000:3000'
+
+volumes:
+  postgres-db:

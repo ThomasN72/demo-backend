@@ -1,50 +1,88 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from '../dto/create-instance.dto';
-import { UpdateUserDto } from '../dto/update-instance.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateInstanceDto } from '../dto/create-instance.dto';
+import { UpdateInstanceDto } from '../dto/update-instance.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../entity/instance.entity';
+import { Instance } from '../entity/instance.entity';
+import { CpuUsage } from '../entity/cpu-usage.entity';
+import { GpuUsage } from '../entity/gpu-usage.entity';
+import { MemoryUsage } from '../entity/memory-usage.entity';
+import { DiskUsage } from '../entity/disk-usage.entity';
 
 @Injectable()
-export class UserService {
+export class InstanceService {
   constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    @InjectRepository(Instance)
+    private instanceRepository: Repository<Instance>,
+
+    @InjectRepository(CpuUsage)
+    private cpuUsageRepository: Repository<CpuUsage>,
+
+    @InjectRepository(GpuUsage)
+    private gpuUsageRepository: Repository<GpuUsage>,
+
+    @InjectRepository(MemoryUsage)
+    private memoryUsageRepository: Repository<MemoryUsage>,
+
+    @InjectRepository(DiskUsage)
+    private diskUsageRepository: Repository<DiskUsage>,
   ) {}
 
-  async findUserIdByEmail(email: string): Promise<number | null> {
-    let user = await this.usersRepository.findOne({
-      where: { email },
-    });
-    if (!user) {
-      user = this.usersRepository.create({
-        email,
-        firstName: 'Default', // Provide defaults for required fields
-        lastName: null,
-        isActive: true,
-      });
-      user = await this.usersRepository.save(user);
+  async create(createInstanceDto: CreateInstanceDto): Promise<Instance> {
+    const instance = this.instanceRepository.create(createInstanceDto);
+    return this.instanceRepository.save(instance);
+  }
+
+  async findAll(): Promise<Instance[]> {
+    return this.instanceRepository.find();
+  }
+
+  async findOne(id: number): Promise<Instance> {
+    const instance = await this.instanceRepository.findOne({ where: { id } });
+    if (!instance) {
+      throw new NotFoundException(`Instance with ID ${id} not found`);
     }
-    return user?.id || null; // Return the user's ID or null if not found
+    return instance;
   }
 
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+  async update(
+    id: number,
+    updateInstanceDto: UpdateInstanceDto,
+  ): Promise<Instance> {
+    await this.instanceRepository.update(id, updateInstanceDto);
+    return this.findOne(id);
   }
 
-  findOne(id: number): Promise<User> {
-    return this.usersRepository.findOne({ where: { id } });
+  async remove(id: number): Promise<boolean> {
+    const result = await this.instanceRepository.delete(id);
+    return result.affected > 0;
   }
 
-  async remove(id: number): Promise<void> {
-    await this.usersRepository.delete(id);
+  async getCpuUsage(instanceId: number): Promise<CpuUsage[]> {
+    return this.cpuUsageRepository.find({
+      where: { instance: { id: instanceId } },
+      order: { timestamp: 'DESC' },
+    });
   }
 
-  create(createUserDto: CreateUserDto) {
-    return this.usersRepository.save(createUserDto);
+  async getGpuUsage(instanceId: number): Promise<GpuUsage[]> {
+    return this.gpuUsageRepository.find({
+      where: { instance: { id: instanceId } },
+      order: { timestamp: 'DESC' },
+    });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.usersRepository.update(id, updateUserDto);
+  async getMemoryUsage(instanceId: number): Promise<MemoryUsage[]> {
+    return this.memoryUsageRepository.find({
+      where: { instance: { id: instanceId } },
+      order: { timestamp: 'DESC' },
+    });
+  }
+
+  async getDiskUsage(instanceId: number): Promise<DiskUsage[]> {
+    return this.diskUsageRepository.find({
+      where: { instance: { id: instanceId } },
+      order: { timestamp: 'DESC' },
+    });
   }
 }

@@ -5,9 +5,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
+import { CpuUsage } from './cpu-usage.entity';
+import { GpuUsage } from './gpu-usage.entity';
+import { MemoryUsage } from './memory-usage.entity';
+import { DiskUsage } from './disk-usage.entity';
 
 @Entity()
 @ObjectType()
@@ -40,4 +45,17 @@ export class Instance {
   @Field({ nullable: true })
   @ApiProperty({ type: Date, example: '2024-11-22T14:00:00.000Z' })
   deletedAt: Date;
+
+  // Relationships with dynamic metrics
+  @OneToMany(() => CpuUsage, (cpuUsage) => cpuUsage.instance)
+  cpuUsage: CpuUsage[];
+
+  @OneToMany(() => GpuUsage, (gpuUsage) => gpuUsage.instance)
+  gpuUsage: GpuUsage[];
+
+  @OneToMany(() => MemoryUsage, (memoryUsage) => memoryUsage.instance)
+  memoryUsage: MemoryUsage[];
+
+  @OneToMany(() => DiskUsage, (diskUsage) => diskUsage.instance)
+  diskUsage: DiskUsage[];
 }

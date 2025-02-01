@@ -15,14 +15,9 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: [
-      'chrome-extension://eikngahlpfjjacbagijimfkbcnbhladh', // Replace with your extension ID
-      'chrome-extension://gcnbhcabeecejdkmmeaggilechmbhlcc', // Replace with your extension ID
-      'chrome-extension://hidfdbemcmkefakajhglojgljfhecglj', // Replace with your extension ID
-    ],
-    methods: 'GET,POST,OPTIONS', // Allow these HTTP methods
-    allowedHeaders: 'Content-Type, Authorization', // Allow these headers
-    credentials: true, // Include credentials if needed
+    origin: 'http://localhost:3000',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
   });
 
   // Swagger configuration.

@@ -4,12 +4,24 @@ import { InstanceResolver } from './resolver/instance.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InstanceController } from './controller/instance.controller';
 import { Instance } from './entity/instance.entity';
+import { CpuUsage } from './entity/cpu-usage.entity';
+import { GpuUsage } from './entity/gpu-usage.entity';
+import { MemoryUsage } from './entity/memory-usage.entity';
+import { DiskUsage } from './entity/disk-usage.entity';
 
 @Module({
   // Reference: https://docs.nestjs.com/techniques/database
   // This module uses the forFeature() method to define which repositories are registered in the current scope.
   // With that in place, we can inject the UsersRepository into the UserService using the @InjectRepository() decorator:
-  imports: [TypeOrmModule.forFeature([Instance])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Instance,
+      CpuUsage,
+      GpuUsage,
+      MemoryUsage,
+      DiskUsage,
+    ]),
+  ],
   controllers: [InstanceController, InstanceController],
   providers: [InstanceService, InstanceResolver],
   // If you want to use the repository outside of the module which imports TypeOrmModule.forFeature,

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './instance/entity/instance.entity';
 import { Repository, getManager } from 'typeorm';
 
 @Injectable()

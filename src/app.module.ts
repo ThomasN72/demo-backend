@@ -2,12 +2,13 @@ import { Module } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './instance/instance.module';
+// import { UserModule } from './instance/instance.module';
 
 import { GraphQLSetupModule } from './graphql.module';
 import { Connection } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnectionOptions } from 'typeorm';
+import { InstanceModule } from 'src/instance/instance.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { getConnectionOptions } from 'typeorm';
     TypeOrmModule.forRootAsync({
       useFactory: async () => Object.assign(await getConnectionOptions(), {}),
     }),
-    UserModule,
+    // UserModule,
+    InstanceModule,
     GraphQLSetupModule,
   ],
   controllers: [AppController],

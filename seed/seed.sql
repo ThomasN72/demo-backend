@@ -417,3 +417,23 @@ INSERT INTO disk_usage (id, "instanceId", "usedDiskTB", timestamp)
 VALUES (48, 3, 16.0, '2025-01-23 00:44:22.767044');
 INSERT INTO disk_usage (id, "instanceId", "usedDiskTB", timestamp) 
 VALUES (49, 1, 0.18, '2025-01-27 23:13:22.767048');
+
+SELECT setval(
+  pg_get_serial_sequence('"gpu_usage"', 'id'),
+  (SELECT COALESCE(MAX(id), 0) FROM "gpu_usage") + 1
+);
+
+SELECT setval(
+  pg_get_serial_sequence('"cpu_usage"', 'id'),
+  (SELECT COALESCE(MAX(id), 0) FROM "cpu_usage") + 1
+);
+
+SELECT setval(
+  pg_get_serial_sequence('"disk_usage"', 'id'),
+  (SELECT COALESCE(MAX(id), 0) FROM "disk_usage") + 1
+);
+
+SELECT setval(
+  pg_get_serial_sequence('"memory_usage"', 'id'),
+  (SELECT COALESCE(MAX(id), 0) FROM "memory_usage") + 1
+);

@@ -97,9 +97,9 @@ export class InstanceService {
     // await this.seedHistoricalData();
     // Start dynamic measurement generation
     this.startCpuDataGeneration();
-    // this.startGpuDataGeneration();
-    // this.startMemoryDataGeneration();
-    // this.startDiskDataGeneration();
+    this.startGpuDataGeneration();
+    this.startMemoryDataGeneration();
+    this.startDiskDataGeneration();
   }
   // Dynamic data generation functions
   startCpuDataGeneration() {
